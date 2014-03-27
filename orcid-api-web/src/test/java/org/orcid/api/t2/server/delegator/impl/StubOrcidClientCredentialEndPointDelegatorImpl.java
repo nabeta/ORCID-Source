@@ -20,7 +20,9 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
-import org.orcid.api.t2.server.delegator.OrcidClientCredentialEndPointDelegator;
+import org.orcid.api.common.delegator.OrcidClientCredentialEndPointDelegator;
+
+
 
 public class StubOrcidClientCredentialEndPointDelegatorImpl implements OrcidClientCredentialEndPointDelegator {
 

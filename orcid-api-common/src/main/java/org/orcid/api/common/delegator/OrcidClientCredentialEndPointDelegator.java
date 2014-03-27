@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-package org.orcid.api.t2.server.delegator;
+package org.orcid.api.common.delegator;
 
 import javax.ws.rs.core.Response;
 import java.util.Set;

@@ -14,7 +14,7 @@
  *
  * =============================================================================
  */
-package org.orcid.api.t2.server.delegator.impl;
+package org.orcid.api.common.delegator.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +24,8 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response;
 
+import org.orcid.api.common.delegator.OrcidClientCredentialEndPointDelegator;
 import org.orcid.api.common.exception.OrcidInvalidScopeException;
-import org.orcid.api.t2.server.delegator.OrcidClientCredentialEndPointDelegator;
 import org.orcid.jaxb.model.message.ScopePathType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,28 +64,26 @@ public class OrcidClientCredentialEndPointDelegatorImpl extends AbstractEndpoint
         /**
          * Patch, update any orcid-grants scope to funding scope
          * */
-        for(String scope : scopes) {
-        	if(scope.contains("orcid-grants")) {
-        		String newScope = scope.replace("orcid-grants", "funding");
-        		LOGGER.info("Client {} provided a grants scope {} which will be updated to {}", new Object[] {
-        				clientId, scope, newScope
-        		});        		
-        		scopes.remove(scope);
-        		scopes.add(newScope);
-        	}
+        for (String scope : scopes) {
+            if (scope.contains("orcid-grants")) {
+                String newScope = scope.replace("orcid-grants", "funding");
+                LOGGER.info("Client {} provided a grants scope {} which will be updated to {}", new Object[] { clientId, scope, newScope });
+                scopes.remove(scope);
+                scopes.add(newScope);
+            }
         }
-        
+
         try {
-			if (scopes != null) {
-				for (String scope : scopes) {
-					ScopePathType.fromValue(scope);
-				}
-			}
-		} catch (IllegalArgumentException iae) {
-			throw new OrcidInvalidScopeException(
-					"One of the provided scopes is not allowed. Please refere to the list of allowed scopes at: http://support.orcid.org/knowledgebase/articles/120162-orcid-scopes");
-		}
-        
+            if (scopes != null) {
+                for (String scope : scopes) {
+                    ScopePathType.fromValue(scope);
+                }
+            }
+        } catch (IllegalArgumentException iae) {
+            throw new OrcidInvalidScopeException(
+                    "One of the provided scopes is not allowed. Please refere to the list of allowed scopes at: http://support.orcid.org/knowledgebase/articles/120162-orcid-scopes");
+        }
+
         clientId = client.getName();
         Map<String, String> parameters = new HashMap<String, String>();
         if (code != null) {
