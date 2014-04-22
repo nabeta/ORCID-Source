@@ -138,6 +138,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     private IndexingStatus indexingStatus = IndexingStatus.PENDING;
     private Set<ProfileEventEntity> profileEvents;
     private boolean enableDeveloperTools;
+    private Set<OrcidSocialEntity> orcidSocial;
     
     // Visibility settings
     private Visibility creditNameVisibility;
@@ -913,6 +914,29 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         return this.primaryRecord;
     }
 
+    
+    
+    
+    
+    /**
+     * 
+     * ORCID SOCIAL
+     * 
+     * */
+    @OneToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.LAZY)
+    @JoinColumn(name = "orcid")
+    public Set<OrcidSocialEntity> getOrcidSocial() {
+        return orcidSocial;
+    }
+
+    public void setOrcidSocial(Set<OrcidSocialEntity> orcidSocial) {
+        this.orcidSocial = orcidSocial;
+    }
+
+    
+    
+    
+    
     /**
      * @param primaryRecord
      *            the primary profile to set
