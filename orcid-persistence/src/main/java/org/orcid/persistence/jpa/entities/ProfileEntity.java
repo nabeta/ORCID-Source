@@ -150,6 +150,8 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     private Visibility profileAddressVisibility;
     private Visibility activitiesVisibilityDefault = Visibility.PRIVATE;
 
+    private String twitter;
+    
     private Date deactivationDate;
 
     @Id
@@ -221,6 +223,25 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     public void setCreditName(String creditName) {
         this.creditName = creditName;
     }
+
+    
+    
+    
+    
+    
+    
+    @Column(name = "twitter", length = 50)
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
+    }
+    
+    
+    
+    
 
     @Column(name = "biography", length = 5000)
     public String getBiography() {
