@@ -780,6 +780,24 @@ public class OrcidProfileManagerImpl implements OrcidProfileManager {
         if (existingProfile == null) {
             return null;
         }
+        OrcidActivities updatedActivities = updatedOrcidProfile.getOrcidActivities();
+        if (updatedActivities == null) {
+            return null;
+        }
+        OrcidWorks updatedOrcidWorks = updatedActivities.getOrcidWorks();
+        if (updatedOrcidWorks == null) {
+            return null;
+        }
+        OrcidActivities existingActivities = existingProfile.getOrcidActivities();
+        if (existingActivities == null) {
+            existingActivities = new OrcidActivities();
+            existingProfile.setOrcidActivities(existingActivities);
+        }
+        OrcidWorks existingOrcidWorks = existingActivities.getOrcidWorks();
+        if (existingOrcidWorks == null) {
+            existingOrcidWorks = new OrcidWorks();
+            existingActivities.setOrcidWorks(existingOrcidWorks);
+        }
         orcidJaxbCopyManager.copyUpdatedWorksPreservingVisbility(existingProfile.retrieveOrcidWorks(), updatedOrcidProfile.retrieveOrcidWorks());
         return updateOrcidProfile(existingProfile);
     }
@@ -976,6 +994,13 @@ public class OrcidProfileManagerImpl implements OrcidProfileManager {
             cachedProfile.setSecurityQuestionAnswer(encryptedAnswer != null ? unencryptedAnswer : null);
             putInCache(cachedProfile);
         }
+    }
+
+    @Override
+    @Transactional
+    public void updateCountry(OrcidProfile orcidProfile) {
+        profileDao.updateCountry(orcidProfile.getOrcidIdentifier().getPath(), orcidProfile.getOrcidBio().getContactDetails().getAddress().getCountry().getValue(),
+                orcidProfile.getOrcidBio().getContactDetails().getAddress().getCountry().getVisibility());
     }
 
     @Override

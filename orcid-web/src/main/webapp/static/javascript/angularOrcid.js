@@ -949,6 +949,154 @@ function EmailEditCtrl($scope, $compile) {
 	
 };
 
+function WebsitesCtrl($scope, $compile) {
+    $scope.showEdit = false;
+    $scope.websitesForm = null;
+    $scope.privacyHelp = false;
+    
+	$scope.toggleEdit = function() {
+		$scope.showEdit = !$scope.showEdit;
+	};
+
+	$scope.close = function() {
+		$scope.getWebsitesForm();
+		$scope.showEdit = false;
+	};
+	
+	$scope.addNew = function() {
+		$scope.websitesForm.websites.push({ name: {value: ""}, url: {value: ""} });
+	};
+    
+    $scope.getWebsitesForm = function(){
+		$.ajax({
+			url: getBaseUri() + '/my-orcid/websitesForms.json',	        
+	        dataType: 'json',
+	        success: function(data) {
+	        	$scope.websitesForm = data;
+	        	var websites = $scope.websitesForm.websites;
+	        	var len = websites.length;
+	        	while (len--) {
+	        		if (!websites[len].url.value.toLowerCase().startsWith('http'))
+	        			websites[len].url.value = 'http://' + websites[len].url.value;
+	        	}
+	        	$scope.$apply();
+	        }
+		}).fail(function(){
+			// something bad is happening!
+	    	console.log("error fetching websites");
+		});
+	};
+
+	$scope.deleteWebsite = function(website){
+		var websites = $scope.websitesForm.websites;
+		var websites = $scope.websitesForm.websites;
+    	var len = websites.length;
+    	while (len--) {
+    		if (websites[len] == website)
+    			websites.splice(len,1);
+    	}
+	}
+	
+	$scope.setWebsitesForm = function(){
+		var websites = $scope.websitesForm.websites;
+    	var len = websites.length;
+    	while (len--) {
+    		if (websites[len].url.value == null || websites[len].url.value.trim() == '')
+    			websites.splice(len,1);
+    	}
+		$.ajax({
+	        url: getBaseUri() + '/my-orcid/websitesForms.json',
+	        type: 'POST',
+	        data:  angular.toJson($scope.websitesForm),
+	        contentType: 'application/json;charset=UTF-8',
+	        dataType: 'json',
+	        success: function(data) {
+	        	$scope.websitesForm = data;
+	        	if(data.errors.length == 0)
+	        	   $scope.close();
+	        	$scope.$apply();
+	        }
+	    }).fail(function() { 
+	    	// something bad is happening!
+	    	console.log("WebsiteCtrl.serverValidate() error");
+	    });
+	};
+	
+	$scope.setPrivacy = function(priv, $event) {
+		$event.preventDefault();
+		$scope.websitesForm.visibility.visibility = priv;
+	};
+
+	$scope.getWebsitesForm();
+};
+
+
+function CountryCtrl($scope, $compile) {
+    $scope.showEdit = false;
+	$scope.countryForm = null;
+	$scope.privacyHelp = false;
+	
+	$scope.toggleEdit = function() {
+		$scope.showEdit = !$scope.showEdit;
+	};
+
+	$scope.close = function() {
+		$scope.showEdit = false;
+	};
+
+	
+	$scope.getCountryForm = function(){
+		$.ajax({
+			url: getBaseUri() + '/account/countryForm.json',	        
+	        dataType: 'json',
+	        success: function(data) {
+	        	$scope.countryForm = data;
+	        	$scope.$apply();
+	        }
+		}).fail(function(){
+			// something bad is happening!
+	    	console.log("error fetching external identifiers");
+		});
+	};
+	
+	$scope.toggleClickPrivacyHelp = function() {
+		if (!document.documentElement.className.contains('no-touch'))
+			$scope.privacyHelp=!$scope.privacyHelp;
+	};
+	
+	$scope.setCountryForm = function(){
+		
+		if ($scope.countryForm.iso2Country.value == '')
+		   $scope.countryForm.iso2Country = null;
+		$.ajax({
+	        url: getBaseUri() + '/account/countryForm.json',
+	        type: 'POST',
+	        data:  angular.toJson($scope.countryForm),
+	        contentType: 'application/json;charset=UTF-8',
+	        dataType: 'json',
+	        success: function(data) {
+	        	$scope.countryForm = data;
+	        	$scope.close();
+	        	$scope.$apply();
+	        }
+	    }).fail(function() { 
+	    	// something bad is happening!
+	    	console.log("CountryCtrl.serverValidate() error");
+	    });
+	};
+
+	
+	$scope.setPrivacy = function(priv, $event) {
+		$event.preventDefault();
+		$scope.countryForm.profileAddressVisibility.visibility = priv;
+		$scope.setCountryForm();
+	};
+	
+	$scope.getCountryForm();
+
+};
+
+
 function ExternalIdentifierCtrl($scope, $compile){		
 	$scope.getExternalIdentifiers = function(){
 		$.ajax({
@@ -3135,7 +3283,7 @@ function DelegatorsCtrl($scope, $compile){
 		template: function (datum) {
 			var forDisplay;
 			if(datum.noResults){
-				forDisplay = "<span class=\'no-delegator-matches\'>no matches, please search again</span>";
+				forDisplay = "<span class=\'no-delegator-matches\'>" + om.get('delegators.nomatches') + "</span>";
 			}
 			else{
 				forDisplay = 
@@ -3174,7 +3322,7 @@ function SwitchUserCtrl($scope, $compile, $document){
 	        	$scope.delegators = data.delegators;
 				$scope.searchResultsCache[''] = $scope.delegators;
 	        	$scope.me = data.me;
-	        	$scope.unfilteredLength = $scope.delegators.delegationDetails.length;
+	        	$scope.unfilteredLength = $scope.delegators != null ? $scope.delegators.delegationDetails.length : 0;
 	        	$scope.$apply();
 	        }
 	    }).fail(function() { 
@@ -3206,6 +3354,16 @@ function SwitchUserCtrl($scope, $compile, $document){
 		} else {
 			$scope.delegators = $scope.searchResultsCache[$scope.searchTerm];
 		}
+	};
+	
+	$scope.switchUser = function(targetOrcid){
+		$.ajax({
+	        url: getBaseUri() + '/switch-user?j_username=' + targetOrcid,
+	        dataType: 'json',
+	        complete: function(data) {
+	        	window.location.reload();
+	        }
+	    });
 	};
 	
 	$document.bind('click',
@@ -3999,6 +4157,7 @@ function SSOPreferencesCtrl($scope, $compile) {
 	$scope.tokenURL = orcidVar.pubBaseUri + '/oauth/token';
 	$scope.authorizeURL = '';
 	$scope.selectedRedirectUri = '';
+	$scope.selectedClientSecret = null;
 	$scope.creating = false;
 	
 	$scope.enableDeveloperTools = function() {
@@ -4047,13 +4206,14 @@ function SSOPreferencesCtrl($scope, $compile) {
 	        url: getBaseUri()+'/developer-tools/get-sso-credentials.json',	        
 	        contentType: 'application/json;charset=UTF-8',
 	        type: 'POST',	                	      
-	        success: function(data){	 
+	        success: function(data){	        	
 	        	$scope.$apply(function(){ 
-	        		if(data != null && data.clientSecret != null) {
+	        		if(data != null && data.clientSecrets != null) {
 	        			$scope.playgroundExample = '';
 	        			$scope.userCredentials = data;	
 	        			$scope.hideGoogleUri = false;	
 	        			$scope.selectedRedirectUri = $scope.userCredentials.redirectUris[0];
+	        			$scope.selectedClientSecret = $scope.userCredentials.clientSecrets[0];
 	        			for(var i = 0; i < $scope.userCredentials.redirectUris.length; i++) {
 	        				if($scope.googleUri == $scope.userCredentials.redirectUris[i].value.value) {
 	        					$scope.hideGoogleUri = true;
@@ -4132,13 +4292,13 @@ function SSOPreferencesCtrl($scope, $compile) {
 	        			$scope.creating = false;	        			
 	        			$scope.showReg = false;
 	        		}
-				});
+	    		});
 	        }
 	    }).fail(function(error) { 
 	    	// something bad is happening!	    	
 	    	console.log("Error creating SSO credentials");	    	
 	    });		
-	};
+	};		
 	
 	$scope.showRevokeModal = function() {		
 		$.colorbox({                      
@@ -4268,8 +4428,15 @@ function SSOPreferencesCtrl($scope, $compile) {
 	
 	
 	$scope.updateSelectedRedirectUri = function() {		
+		//Initialize client secret if needed
+		if($scope.selectedClientSecret == null) {
+			$scope.selectedClientSecret = $scope.userCredentials.clientSecrets[0];
+		}
 		var clientId = $scope.userCredentials.clientOrcid.value;
 		var selectedRedirectUriValue = $scope.selectedRedirectUri.value.value;
+		var selectedClientSecret = $scope.selectedClientSecret.value;
+		
+		console.log("Selected secret: " + angular.toJson($scope.selectedClientSecret));
 		
 		//Build the google playground url example
 		$scope.playgroundExample = '';
@@ -4277,9 +4444,9 @@ function SSOPreferencesCtrl($scope, $compile) {
 		if($scope.googleUri == selectedRedirectUriValue) {
 			var example = $scope.googleExampleLink;
 			example = example.replace('[PUB_BASE_URI_ENCODE]', encodeURI(orcidVar.pubBaseUri));
-			example = example.replace('[BASE_URI_ENCODE]', encodeURI(getBaseUri()))
+			example = example.replace('[BASE_URI_ENCODE]', encodeURI(getBaseUri()));
 			example = example.replace('[CLIENT_ID]', clientId);
-			example = example.replace('[CLIENT_SECRET]', $scope.userCredentials.clientSecret.value);	        					
+			example = example.replace('[CLIENT_SECRET]', selectedClientSecret);	        					
 			$scope.playgroundExample = example;
 		}		
 				
@@ -4292,10 +4459,66 @@ function SSOPreferencesCtrl($scope, $compile) {
 		// rebuild sampel Auhtroization Curl
 		var sampeleCurl = $scope.sampleAuthCurlTemplate;
 		$scope.sampleAuthCurl = sampeleCurl.replace('[CLIENT_ID]', clientId)
-		    .replace('[CLIENT_SECRET]', $scope.userCredentials.clientSecret.value)
+		    .replace('[CLIENT_SECRET]', selectedClientSecret)
 		    .replace('[PUB_BASE_URI]', orcidVar.pubBaseUri)
 		    .replace('[REDIRECT_URI]', selectedRedirectUriValue);
        
+	};
+	
+	$scope.updateSelectedClientSecret = function(){
+		$scope.updateSelectedRedirectUri();
+	};
+	
+	$scope.confirmDeleteClientSecret = function(index) {
+		$scope.clientSecretToDelete = $scope.userCredentials.clientSecrets[index];
+		$.colorbox({        	            
+            html : $compile($('#delete-secret-modal').html())($scope), 
+            transition: 'fade',
+            onLoad: function() {
+			    $('#cboxClose').remove();
+			},
+	        scrolling: true
+        });
+        $.colorbox.resize({width:"400px" , height:"175px"});
+	};
+	
+	$scope.deleteClientSecret = function(secretToDelete) {		
+		$.ajax({
+			url: getBaseUri() + '/developer-tools/delete-client-secret.json',
+			type: 'POST',
+			dataType: 'text',
+			data: 'clientSecret=' + secretToDelete, 
+			success: function(data) {
+				if(data) {
+					$scope.getSSOCredentials();
+					$scope.closeModal();
+				} else
+					console.log('Unable to delete client secret');
+			}
+		}).fail(function() { 
+	    	console.log("Error fetching empty redirect uri");
+	    });
+		
+		
+	};
+	
+	$scope.addClientSecret = function() {
+		$.ajax({
+			url: getBaseUri() + '/developer-tools/add-client-secret.json',
+			type: 'POST',			
+			success: function(data) {
+				if(data)
+					$scope.getSSOCredentials();
+				else
+					console.log('Unable to delete client secret');
+			}
+		}).fail(function() { 
+	    	console.log("Error fetching empty redirect uri");
+	    });
+	};
+	
+	$scope.closeModal = function(){
+		$.colorbox.close();	
 	};
 	
 	//init

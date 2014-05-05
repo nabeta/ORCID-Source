@@ -56,23 +56,86 @@
 		       			${otherName.content}<#if otherName_has_next><br /></#if>
 		       		</#list></p>
 	       	</#if>
-            <#if (countryName)??>
-                <p><strong><@orcid.msg 'public_profile.labelCountry'/></strong>
-                ${(countryName)!}
-                </p>
-            </#if>
+            
+            <div ng-controller="CountryCtrl" class="country-controller">
+	        	<strong><@orcid.msg 'public_profile.labelCountry'/></strong>
+	               
+                <span ng-hide="showEdit == true">
+	                <span ng-show="countryForm != null && countryForm.iso2Country != null" ng-bind="countryForm.iso2Country.value">
+	                </span>
+                    
+	                <span ng-show="countryForm != null && countryForm.iso2Country == null" ng-cloak>
+	                   <@spring.message "workspace.select_country"/>
+	                </span>
+	                
+	                <span class="glyphicon glyphicon-pencil edit-country edit-option" ng-click="toggleEdit()" title=""></span>
+               </span>
+               
+               <div ng-show="showEdit == true" ng-cloak class="country-edit">
+               	  <a ng-click="close()" class="pull-right"><@orcid.msg 'freemarker.btnclose'/></a>               	  
+               	  <@orcid.privacyToggle  angularModel="countryForm.profileAddressVisibility.visibility"
+			         questionClick="toggleClickPrivacyHelp()"
+			         clickedClassCheck="{'popover-help-container-show':privacyHelp==true}" 
+			         publicClick="setPrivacy('PUBLIC', $event)" 
+                 	     limitedClick="setPrivacy('LIMITED', $event)" 
+                 	     privateClick="setPrivacy('PRIVATE', $event)" />
+                  
+                  <select id="country" name="country" ng-model="countryForm.iso2Country.value" ng-change="setCountryForm()">
+		    			<option value=""><@orcid.msg 'org.orcid.persistence.jpa.entities.CountryIsoEntity.empty' /></option>
+						<#list isoCountries?keys as key>
+							<option value="${key}">${isoCountries[key]}</option>
+						</#list>
+				  </select>				  
+				  				  
+				</div>
+				
+            </div>
+            
+           
 	       	<#if (profile.orcidBio.keywords)?? && (profile.orcidBio.keywords.keyword?size != 0)>
 	        	<p><strong><@orcid.msg 'public_profile.labelKeywords'/></strong> 
 		       		<#list profile.orcidBio.keywords.keyword as keyword>
 		       			${keyword.content}<#if keyword_has_next>,</#if>
 		       		</#list></p>
 	       	</#if>
-	       	<#if (profile.orcidBio.researcherUrls)?? && (profile.orcidBio.researcherUrls.researcherUrl?size != 0)>
-	        	<p><strong><@orcid.msg 'public_profile.labelWebsites'/></strong> <br/>
-		       		<#list profile.orcidBio.researcherUrls.researcherUrl as url>
-		       		   <a href="<@orcid.absUrl url.url/>" target="_blank" rel="nofollow"><#if (url.urlName.content)! != "">${url.urlName.content}<#else>${url.url.value}</#if></a><#if url_has_next><br/></#if>
-		       		</#list></p>
-	       	</#if>
+	       	
+	       	<div ng-controller="WebsitesCtrl" class="websites-controller">
+	        	<div>
+	        	   <strong><@orcid.msg 'public_profile.labelWebsites'/></strong>
+	        	   <span ng-hide="showEdit == true">
+	        	      <span class="glyphicon glyphicon-pencil edit-country edit-option" ng-click="toggleEdit()" title=""></span><br />
+	        	      <div ng-repeat="website in websitesForm.websites" ng-cloak>
+	        	         <a href="{{website.url.value}}" target="_blank" rel="nofollow">{{website.name.value != null? website.name.value : website.url.value}}</a>
+	        	      </div>
+	        	   </span>
+	        	   <div ng-show="showEdit == true" ng-cloak class="websites-edit">
+	        	      <@orcid.privacyToggle  angularModel="websitesForm.visibility.visibility"
+			             questionClick="toggleClickPrivacyHelp()"
+			             clickedClassCheck="{'popover-help-container-show':privacyHelp==true}" 
+			             publicClick="setPrivacy('PUBLIC', $event)" 
+                 	     limitedClick="setPrivacy('LIMITED', $event)" 
+                 	     privateClick="setPrivacy('PRIVATE', $event)" />
+	        	   
+	        	      <div ng-repeat="website in websitesForm.websites">
+	        	          <input type="text" ng-model="website.url.value" placeholder="${springMacroRequestContext.getMessage("manual_work_form_contents.labelURL")}"></input>
+	        	          <input type="text" ng-model="website.name.value" placeholder="${springMacroRequestContext.getMessage("manual_work_form_contents.labeldescription")}"></input>
+	        	          <a ng-click="deleteWebsite(website)" class="glyphicon glyphicon-trash grey"></a>
+	        	          <br />
+	        	          <span class="orcid-error" ng-show="website.url.errors.length > 0">
+						     <div ng-repeat='error in website.url.errors' ng-bind-html="error"></div>
+					      </span>
+	        	          <span class="orcid-error" ng-show="website.name.errors.length > 0">
+						     <div ng-repeat='error in website.name.errors' ng-bind-html="error"></div>
+					      </span>
+	        	      </div>
+	        	      <a class="glyphicon glyphicon-plus" ng-click="addNew()"></a><br />
+	        	      <button class="btn btn-primary" ng-click="setWebsitesForm()"><@spring.message "freemarker.btnsavechanges"/></button>
+	        	      <button class="btn" ng-click="close()"><@spring.message "freemarker.btncancel"/></button>
+	        	   </div>
+	        	   
+	           </div>
+	       	</div>
+	       	
        		<div ng-controller="ExternalIdentifierCtrl" ng-hide="!externalIdentifiersPojo.externalIdentifiers.length" ng-cloak>	       			
        			<p><strong><@orcid.msg 'public_profile.labelOtherIDs'/></strong></p>
        			<div ng-repeat='externalIdentifier in externalIdentifiersPojo.externalIdentifiers'>
@@ -246,7 +309,7 @@
 		<div class="row">
 			<div class="col-md-12 col-sm-12 col-xs-12">
 				<h3><@orcid.msg 'manage.deleteExternalIdentifier.pleaseConfirm'/> {{removeExternalModalText}} </h3>
-				<button class="btn btn-danger" ng-click="removeExternalIdentifier()"><@orcid.msg 'manage.deleteExternalIdentifier.delete'/></button> 
+				<button class="btn btn-danger" ng-click="removeExternalIdentifier()"><@orcid.msg 'freemarker.btnDelete'/></button> 
 				<a ng-click="closeModal()"><@orcid.msg 'freemarker.btncancel'/></a>
 			<div>
 		<div>

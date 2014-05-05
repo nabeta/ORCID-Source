@@ -80,6 +80,7 @@ import org.orcid.persistence.jpa.entities.ProfileSummaryEntity;
 import org.orcid.persistence.jpa.entities.ResearcherUrlEntity;
 import org.orcid.pojo.ChangePassword;
 import org.orcid.pojo.SecurityQuestion;
+import org.orcid.pojo.ajaxForm.CountryForm;
 import org.orcid.pojo.ajaxForm.Emails;
 import org.orcid.pojo.ajaxForm.Errors;
 import org.orcid.utils.DateUtils;
@@ -290,9 +291,13 @@ public class ManageProfileController extends BaseWorkspaceController {
         String currentUserOrcid = getCurrentUserOrcid();
         GivenPermissionToEntity existing = givenPermissionToDao.findByGiverAndReceiverOrcid(currentUserOrcid, delegateOrcid);
         if (existing == null) {
+            // Clear the delegate's profile from the cache so that the granting
+            // user is visible to them immediately
+            Date delegateLastModified = profileDao.updateLastModifiedDate(delegateOrcid);
             GivenPermissionToEntity permission = new GivenPermissionToEntity();
             permission.setGiver(currentUserOrcid);
             ProfileSummaryEntity receiver = new ProfileSummaryEntity(delegateOrcid);
+            receiver.setLastModified(delegateLastModified);
             permission.setReceiver(receiver);
             permission.setApprovalDate(new Date());
             givenPermissionToDao.merge(permission);
@@ -310,10 +315,6 @@ public class ManageProfileController extends BaseWorkspaceController {
             List<DelegationDetails> detailsList = new ArrayList<>(1);
             detailsList.add(details);
             notificationManager.sendNotificationToAddedDelegate(currentUser, detailsList);
-            // Clear the delegate's profile from the cache so that the granting
-            // user
-            // is visible to them immediately
-            profileDao.updateLastModifiedDate(delegateOrcid);
         }
         return delegateOrcid;
     }
@@ -803,6 +804,26 @@ public class ManageProfileController extends BaseWorkspaceController {
         }
         return emails;
     }
+    
+
+    @RequestMapping(value = "/countryForm.json", method = RequestMethod.GET)
+    public @ResponseBody
+    CountryForm getProfileCountryJson(HttpServletRequest request) throws NoSuchRequestHandlingMethodException {
+        OrcidProfile currentProfile = getEffectiveProfile();
+        CountryForm countryForm = CountryForm.valueOf(currentProfile);
+        return countryForm;
+    }
+    
+    
+    @RequestMapping(value = "/countryForm.json", method = RequestMethod.POST)
+    public @ResponseBody CountryForm setProfileCountryJson(HttpServletRequest request, @RequestBody CountryForm countryForm) throws NoSuchRequestHandlingMethodException {
+        OrcidProfile currentProfile = getEffectiveProfile();
+        countryForm.populateProfile(currentProfile);
+        // only update entity attributes
+        orcidProfileManager.updateCountry(currentProfile);
+        return countryForm;
+    }
+
 
     @RequestMapping(value = "/save-bio-settings", method = RequestMethod.POST)
     public ModelAndView saveEditedBio(HttpServletRequest request, @Valid @ModelAttribute("changePersonalInfoForm") ChangePersonalInfoForm changePersonalInfoForm,
