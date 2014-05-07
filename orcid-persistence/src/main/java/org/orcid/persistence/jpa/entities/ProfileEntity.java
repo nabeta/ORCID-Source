@@ -137,8 +137,7 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     private SortedSet<OrcidOauth2TokenDetail> tokenDetails;
     private IndexingStatus indexingStatus = IndexingStatus.PENDING;
     private Set<ProfileEventEntity> profileEvents;
-    private boolean enableDeveloperTools;
-    private Set<OrcidSocialEntity> orcidSocial;
+    private boolean enableDeveloperTools;    
     
     // Visibility settings
     private Visibility creditNameVisibility;
@@ -223,25 +222,6 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     public void setCreditName(String creditName) {
         this.creditName = creditName;
     }
-
-    
-    
-    
-    
-    
-    
-    @Column(name = "twitter", length = 50)
-    public String getTwitter() {
-        return twitter;
-    }
-
-    public void setTwitter(String twitter) {
-        this.twitter = twitter;
-    }
-    
-    
-    
-    
 
     @Column(name = "biography", length = 5000)
     public String getBiography() {
@@ -936,28 +916,6 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     }
 
     
-    
-    
-    
-    /**
-     * 
-     * ORCID SOCIAL
-     * 
-     * */
-    @OneToOne(cascade = { CascadeType.DETACH, CascadeType.REFRESH }, fetch = FetchType.LAZY)
-    @JoinColumn(name = "orcid")
-    public Set<OrcidSocialEntity> getOrcidSocial() {
-        return orcidSocial;
-    }
-
-    public void setOrcidSocial(Set<OrcidSocialEntity> orcidSocial) {
-        this.orcidSocial = orcidSocial;
-    }
-
-    
-    
-    
-    
     /**
      * @param primaryRecord
      *            the primary profile to set
@@ -1038,5 +996,19 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         Date lastModified = this.getLastModified() == null ? new Date() : this.getLastModified();
         String lastModifiedString = DateUtils.convertToXMLGregorianCalendar(lastModified).toXMLFormat();
         return StringUtils.join(new String[] { orcid, lastModifiedString }, "_");
+    }
+    
+    
+    /**
+     * ORCID SOCIAL PROJECT
+     * */
+    
+    @Column(name = "twitter", length = 50)
+    public String getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(String twitter) {
+        this.twitter = twitter;
     }
 }
