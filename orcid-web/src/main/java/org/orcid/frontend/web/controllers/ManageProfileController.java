@@ -16,6 +16,8 @@
  */
 package org.orcid.frontend.web.controllers;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -105,6 +107,10 @@ import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMeth
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import schema.constants.SolrConstants;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 /**
  * Copyright 2011-2012 ORCID
@@ -956,4 +962,20 @@ public class ManageProfileController extends BaseWorkspaceController {
         return upTodateResearcherUrls;
     }
 
+    /**
+     * ORCID SOCIAL PROJECT
+     * */
+    @RequestMapping(value = "/enableTwitter.json", method = RequestMethod.POST)
+    public ModelAndView enableTwitter() throws Exception {
+        ModelAndView twitterMV = new ModelAndView("open_twitter");
+        // The factory instance is re-useable and thread safe.
+        Twitter twitter = TwitterFactory.getSingleton();
+        twitter.setOAuthConsumer("soCTKWWByfjq91SxuaQRh4Gnk", "sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM");
+        RequestToken requestToken = twitter.getOAuthRequestToken();
+        AccessToken accessToken = null;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        //Open a new tab an redirect the user to twitter
+        twitterMV.addObject("twitter_url", requestToken.getAuthorizationURL());
+        return twitterMV;
+    }
 }
