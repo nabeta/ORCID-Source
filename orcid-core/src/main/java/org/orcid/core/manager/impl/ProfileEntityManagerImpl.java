@@ -164,4 +164,15 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
         boolean result = profileDao.updateDeveloperTools(profile.getOrcidIdentifier().getPath(), false);
         return result;
     }
+    
+    /**
+     * ORCID SOCIAL PROJECT
+     * */
+    public boolean enableTwitter(String orcid, String token) {
+        return profileDao.enableTwitter(orcid, token);
+    }
+    
+    public String getTwitterKey(String orcid) {
+        return profileDao.getTwitterKey(orcid);
+    }
 }

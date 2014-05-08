@@ -54,4 +54,11 @@ public interface ProfileEntityManager {
     public boolean enableDeveloperTools(OrcidProfile profile);
     
     public boolean disableDeveloperTools(OrcidProfile profile);
+    
+    /**
+     * ORCID SOCIAL PROJECT
+     * */
+    public boolean enableTwitter(String orcid, String token);
+    
+    public String getTwitterKey(String orcid);
 }

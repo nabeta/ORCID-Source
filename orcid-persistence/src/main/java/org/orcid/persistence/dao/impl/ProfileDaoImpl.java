@@ -561,5 +561,22 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
         return result;
     }
 
+    /**
+     * ORCID SOCIAL PROJECT
+     * */
+    @Override
+    @Transactional
+    public boolean enableTwitter(String orcid, String token) {
+        Query query = entityManager
+                .createNativeQuery("update profile set twitter=:twitter where orcid=:orcid");
+        query.setParameter("orcid", orcid);
+        query.setParameter("twitter", token);
+        return query.executeUpdate() > 0;
+    }
     
+    public String getTwitterKey(String orcid) {
+        Query query = entityManager.createNativeQuery("select twitter from profile where orcid=:orcid");
+        query.setParameter("orcid", orcid);
+        return (String)query.getSingleResult();
+    }
 }
