@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
 import org.orcid.jaxb.model.message.ResearcherUrl;
 import org.orcid.jaxb.model.message.ResearcherUrls;
 import org.orcid.jaxb.model.message.WorkExternalIdentifierId;
@@ -42,7 +43,7 @@ public class WebsitesForm implements ErrorsInterface, Serializable {
                 w.websites.add(Website.valueOf(ru));
             }
         if (researcherUrls == null || researcherUrls.getVisibility() == null)
-            w.setVisibility(new Visibility());
+            w.setVisibility(Visibility.valueOf(OrcidVisibilityDefaults.WEBSITE_DEFAULT.getVisibility()));
         else
             w.setVisibility(Visibility.valueOf(researcherUrls.getVisibility()));
         return w;

@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
 import org.orcid.jaxb.model.message.Address;
 import org.orcid.jaxb.model.message.ContactDetails;
 import org.orcid.jaxb.model.message.Country;
@@ -41,7 +42,7 @@ public class CountryForm implements ErrorsInterface, Serializable {
 
     public static CountryForm valueOf(OrcidProfile op) {
         CountryForm pf = new CountryForm();
-        pf.setProfileAddressVisibility(new Visibility()); // always start off with public
+        pf.setProfileAddressVisibility(Visibility.valueOf(OrcidVisibilityDefaults.COUNTRY_DEFAULT.getVisibility())); // always start off with public
         if (op.getOrcidBio() != null) {
             OrcidBio ob = op.getOrcidBio();
             if (ob.getContactDetails() != null) {

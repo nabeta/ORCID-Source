@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
 import org.orcid.jaxb.model.message.Keyword;
 import org.orcid.jaxb.model.message.Keywords;
 
@@ -36,7 +37,7 @@ public class KeywordsForm implements ErrorsInterface, Serializable {
     public static KeywordsForm valueOf(Keywords keywords) {
         KeywordsForm kf = new KeywordsForm();
         if (keywords ==  null) {
-            kf.setVisibility(new Visibility());
+            kf.setVisibility(Visibility.valueOf(OrcidVisibilityDefaults.KEYWORD_DEFAULT.getVisibility()));
             return kf;
         }
         if (keywords.getKeyword() != null) {

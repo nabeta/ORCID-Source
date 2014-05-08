@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
 import org.orcid.pojo.Redirect;
 
 public class Claim extends Redirect implements ErrorsInterface, Serializable {
@@ -49,7 +50,7 @@ public class Claim extends Redirect implements ErrorsInterface, Serializable {
         sendChangeNotifications = new Checkbox();
         sendOrcidNews = new Checkbox();
         termsOfUse = new Checkbox();
-        activitiesVisibilityDefault = new Visibility();
+        activitiesVisibilityDefault = Visibility.valueOf(OrcidVisibilityDefaults.ACTIVITES_DEFAULT.getVisibility());
 
     }
 

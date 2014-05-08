@@ -389,7 +389,7 @@ public class OrcidJaxbCopyManagerImpl implements OrcidJaxbCopyManager {
 
     @Override
     public void copyUpdatedWorksPreservingVisbility(OrcidWorks existingWorks, OrcidWorks updatedWorks) {
-        copyActivitiesToExistingPreservingVisibility(existingWorks, updatedWorks, OrcidVisibilityDefaults.WORKS_DEFAULT.getVisibility());
+        copyActivitiesToExistingPreservingVisibility(existingWorks, updatedWorks, OrcidVisibilityDefaults.ACTIVITES_DEFAULT.getVisibility());
     }
 
     @Override

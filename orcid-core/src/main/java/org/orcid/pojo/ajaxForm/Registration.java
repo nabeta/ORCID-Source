@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
+
 public class Registration implements ErrorsInterface, Serializable {
     /**
      * 
@@ -64,7 +66,7 @@ public class Registration implements ErrorsInterface, Serializable {
         sendChangeNotifications = new Checkbox();
         sendOrcidNews = new Checkbox();
         termsOfUse = new Checkbox();
-        activitiesVisibilityDefault = new Visibility();
+        activitiesVisibilityDefault = Visibility.valueOf(OrcidVisibilityDefaults.ACTIVITES_DEFAULT.getVisibility());
         referredBy = new Text();
     }
 

@@ -960,7 +960,7 @@ public class Jaxb2JpaAdapterImpl implements Jaxb2JpaAdapter {
             profileFundingEntity.setType(funding.getType() != null ? funding.getType() : null);
             if(funding.getUrl() != null)
             	profileFundingEntity.setUrl(StringUtils.isNotBlank(funding.getUrl().getValue()) ? funding.getUrl().getValue() : null);            
-            profileFundingEntity.setVisibility(funding.getVisibility() != null ? funding.getVisibility() : OrcidVisibilityDefaults.WORKS_DEFAULT.getVisibility());
+            profileFundingEntity.setVisibility(funding.getVisibility() != null ? funding.getVisibility() : OrcidVisibilityDefaults.ACTIVITES_DEFAULT.getVisibility());
 
             return profileFundingEntity;
         }

@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.orcid.core.security.visibility.OrcidVisibilityDefaults;
 import org.orcid.jaxb.model.message.Keyword;
 import org.orcid.jaxb.model.message.Keywords;
 import org.orcid.jaxb.model.message.OtherName;
@@ -38,7 +39,7 @@ public class OtherNamesForm implements ErrorsInterface, Serializable {
     public static OtherNamesForm valueOf(OtherNames otherNames) {
         OtherNamesForm on = new OtherNamesForm();
         if (otherNames ==  null) {
-            on.setVisibility(new Visibility());
+            on.setVisibility(Visibility.valueOf(OrcidVisibilityDefaults.OTHER_NAMES_DEFAULT.getVisibility()));
             return on;
         }
         if (otherNames.getOtherName() != null) {
@@ -46,7 +47,7 @@ public class OtherNamesForm implements ErrorsInterface, Serializable {
                 if (otherName.getContent() != null)
                     on.getOtherNames().add(Text.valueOf(otherName.getContent()));
         }
-        if (otherNames.getVisibility() == null) on.setVisibility(new Visibility());
+        if (otherNames.getVisibility() == null) on.setVisibility(Visibility.valueOf(OrcidVisibilityDefaults.OTHER_NAMES_DEFAULT.getVisibility()));
         else on.setVisibility(Visibility.valueOf(otherNames.getVisibility()));
         return on;
     }
