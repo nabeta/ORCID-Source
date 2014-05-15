@@ -295,7 +295,64 @@
 						</div>
 					</td>
 				</tr>
+				<tr>
+					<th><a name="editSocialNetworks"></a>${springMacroRequestContext.getMessage("manage.social_networks")}</th>
+					<td><a href="" ng-click="toggleSocialNetworksEdit()"
+						ng-bind="socialNetworksToggleText"></a></td>
+				</tr>
+				<tr ng-controller="SocialNetworksCtrl" ng-show="showEditSocialSettings" ng-cloak>
+					<td colspan="2">
+						<div class="editTablePadCell35">
+							<form role="form" id="social-networks">							  
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Facebook
+							    </label>
+							  </div>
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Twitter
+							    </label>
+							  </div>
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Google+
+							    </label>
+							  </div>							  
+							</form>
+							
+							<form role="form" id="sections">							  
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Works
+							    </label>
+							  </div>
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Fundings
+							    </label>
+							  </div>
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Employment
+							    </label>
+							  </div>
+							  <div class="checkbox">
+							    <label>
+							      <input type="checkbox"> Education
+							    </label>
+							  </div>								  
+							</form>
+							
+							
+							
+						</div>
+					</td>
+				</tr>
+				
 			</tbody>
+			
+			
 		</table>
 
 		<h1 id="manage-permissions">${springMacroRequestContext.getMessage("manage.manage_permissions")}</h1>

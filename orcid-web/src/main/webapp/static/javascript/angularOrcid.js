@@ -602,7 +602,25 @@ function EditTableCtrl($scope) {
 	
 	// init security question
 	$scope.showEditSecurityQuestion = (window.location.hash === "#editSecurityQuestion");
-	$scope.securityQuestionUpdateToggleText();	
+	$scope.securityQuestionUpdateToggleText();
+	
+	
+	/* Social Networks */
+	
+	$scope.socialNetworksUpdateToggleText = function () {
+		if ($scope.showEditSocialSettings) $scope.socialNetworksToggleText = om.get("manage.socialNetworks.hide");
+		else $scope.socialNetworksToggleText = om.get("manage.socialNetworks.edit");
+		console.log($scope.showEditSocialSettings);
+	};
+	
+	$scope.toggleSocialNetworksEdit = function(){
+		$scope.showEditSocialSettings = !$scope.showEditSocialSettings;
+		$scope.socialNetworksUpdateToggleText();
+	};
+	
+	//init social networks row
+	$scope.showEditSocialSettings = (window.location.hash === "#editSocialNetworks");
+	$scope.socialNetworksUpdateToggleText();
 	
 };
 
@@ -5012,3 +5030,10 @@ function ClientEditCtrl($scope, $compile){
 	$scope.loadAvailableScopes();
 	
 };
+
+function SocialNetworksCtrl($scope){
+	
+	
+	
+	
+} 
