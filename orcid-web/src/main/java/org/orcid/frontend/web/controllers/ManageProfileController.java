@@ -40,13 +40,10 @@ import org.orcid.core.manager.OtherNameManager;
 import org.orcid.core.manager.ProfileEntityManager;
 import org.orcid.core.manager.ProfileKeywordManager;
 import org.orcid.core.manager.ResearcherUrlManager;
-import org.orcid.core.utils.SolrFieldWeight;
-import org.orcid.core.utils.SolrQueryBuilder;
 import org.orcid.frontend.web.forms.ChangePersonalInfoForm;
 import org.orcid.frontend.web.forms.ChangeSecurityQuestionForm;
 import org.orcid.frontend.web.forms.ManagePasswordOptionsForm;
 import org.orcid.frontend.web.forms.PreferencesForm;
-import org.orcid.frontend.web.forms.SearchForDelegatesForm;
 import org.orcid.jaxb.model.message.ApprovalDate;
 import org.orcid.jaxb.model.message.CreditName;
 import org.orcid.jaxb.model.message.DelegateSummary;
@@ -54,12 +51,9 @@ import org.orcid.jaxb.model.message.Delegation;
 import org.orcid.jaxb.model.message.DelegationDetails;
 import org.orcid.jaxb.model.message.Email;
 import org.orcid.jaxb.model.message.EncryptedSecurityAnswer;
-import org.orcid.jaxb.model.message.GivenPermissionTo;
 import org.orcid.jaxb.model.message.Keywords;
 import org.orcid.jaxb.model.message.OrcidIdentifier;
-import org.orcid.jaxb.model.message.OrcidMessage;
 import org.orcid.jaxb.model.message.OrcidProfile;
-import org.orcid.jaxb.model.message.OrcidSearchResults;
 import org.orcid.jaxb.model.message.OtherNames;
 import org.orcid.jaxb.model.message.Preferences;
 import org.orcid.jaxb.model.message.ResearcherUrl;
@@ -87,6 +81,7 @@ import org.orcid.pojo.ajaxForm.CountryForm;
 import org.orcid.pojo.ajaxForm.Emails;
 import org.orcid.pojo.ajaxForm.Errors;
 import org.orcid.pojo.ajaxForm.NamesForm;
+import org.orcid.pojo.ajaxForm.Text;
 import org.orcid.utils.DateUtils;
 import org.orcid.utils.OrcidWebUtils;
 import org.slf4j.Logger;
@@ -106,7 +101,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.NoSuchRequestHandlingMethodException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import schema.constants.SolrConstants;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
@@ -217,48 +211,6 @@ public class ManageProfileController extends BaseWorkspaceController {
     public ModelAndView manageProfile(@RequestParam(value = "activeTab", required = false) String activeTab) {
         String tab = activeTab == null ? "profile-tab" : activeTab;
         ModelAndView mav = rebuildManageView(tab);
-        return mav;
-    }
-
-    @RequestMapping(value = "/search-for-delegates", method = RequestMethod.GET)
-    public ModelAndView viewSearchForDelegates() {
-        ModelAndView mav = new ModelAndView("search_for_delegates");
-        return mav;
-    }
-
-    @RequestMapping(value = "/search-for-delegates", method = RequestMethod.POST)
-    public ModelAndView searchForDelegates(@RequestParam("searchTerms") String searchTerms) {
-        SolrQueryBuilder queryBuilder = new SolrQueryBuilder();
-        List<SolrFieldWeight> fields = new ArrayList<SolrFieldWeight>();
-        fields.add(new SolrFieldWeight(SolrConstants.GIVEN_NAMES, 2.0f));
-        fields.add(new SolrFieldWeight(SolrConstants.FAMILY_NAME, 3.0f));
-        fields.add(new SolrFieldWeight(SolrConstants.CREDIT_NAME, 3.0f));
-        fields.add(new SolrFieldWeight(SolrConstants.EMAIL_ADDRESS, 4.0f));
-        fields.add(new SolrFieldWeight(SolrConstants.TEXT, 0.5f));
-        fields.add(new SolrFieldWeight(SolrConstants.AFFILIATE_PRIMARY_INSTITUTION_NAMES, 1.0f));
-        queryBuilder.appendEDisMaxQuery(fields);
-        queryBuilder.appendValue(searchTerms);
-        OrcidProfile orcidProfile = getEffectiveProfile();
-        List<String> orcidsToExclude = new ArrayList<String>();
-        // Exclude myself
-        orcidsToExclude.add(orcidProfile.getOrcidIdentifier().getPath());
-        // Exclude profiles I've already delegated to
-        Delegation delegation = orcidProfile.getOrcidBio().getDelegation();
-        if (delegation != null) {
-            GivenPermissionTo givenPermissionTo = delegation.getGivenPermissionTo();
-            if (givenPermissionTo != null) {
-                for (DelegationDetails delegationDetails : givenPermissionTo.getDelegationDetails()) {
-                    orcidsToExclude.add(delegationDetails.getDelegateSummary().getOrcidIdentifier().getPath());
-                }
-            }
-        }
-        queryBuilder.appendNOTCondition(SolrConstants.ORCID, orcidsToExclude);
-        // XXX Use T1 API
-        OrcidMessage orcidMessage = orcidSearchManager.findOrcidsByQuery(queryBuilder.retrieveQuery());
-        OrcidSearchResults searchResults = orcidMessage.getOrcidSearchResults();
-        SearchForDelegatesForm searchForDelegatesForm = new SearchForDelegatesForm(searchResults);
-        ModelAndView mav = new ModelAndView("search_for_delegates_results");
-        mav.addObject(searchForDelegatesForm);
         return mav;
     }
 
@@ -844,11 +796,13 @@ public class ManageProfileController extends BaseWorkspaceController {
     public @ResponseBody
     NamesForm setNameFormJson(HttpServletRequest request, @RequestBody NamesForm nf) throws NoSuchRequestHandlingMethodException {
         nf.setErrors(new ArrayList<String>());
-        copyErrors(nf.getFamilyName(), nf);
+        if (nf.getGivenNames() == null) nf.setGivenNames(new Text()); 
+        givenNameValidate(nf.getGivenNames());
+        copyErrors(nf.getGivenNames(), nf);
         if (nf.getErrors().size()>0) return nf;        
         OrcidProfile currentProfile = getEffectiveProfile();
         nf.populatePersonalDetails(currentProfile.getOrcidBio().getPersonalDetails());
-        orcidProfileManager.updatePersonalInformation(currentProfile);
+        orcidProfileManager.updateNames(currentProfile);
         return nf;
     }
 

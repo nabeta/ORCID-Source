@@ -3392,7 +3392,7 @@ p.orcid-id-container{
 } 
 
 .authorizeURL {
-	width: 465px;
+	width: 495px;
 	height: 95px;
 }
 
@@ -3588,6 +3588,14 @@ p.orcid-id-container{
 
 .developer-tools .client_secret_table .c3 {
 	width: 5%;
+}
+
+.developer-tools .small_column {
+	width: 21%;
+}
+
+.developer-tools .large_column {
+	width: 79%;
 }
 
 .padding-fix{
@@ -3825,7 +3833,7 @@ p.orcid-id-container{
 
  .keywords-box, .keywords-box input,
  .other-names-box, .other-names-box input {
- 	margin: 10px 0 0 0;
+ 	margin: 10px 0 0 0; 	
  }
 
  .websites-box a.glyphicon-trash,
@@ -3895,6 +3903,19 @@ p.orcid-id-container{
 .confirm-oauth-access .id-banner .id-banner-container ul.id-banner-dropdown,
 .confirm-oauth-access .id-banner .id-banner-container ul.id-banner-dropdown > li{
 		width: 100%;
+}
+
+.box{
+	padding: 10px 0;
+	display: block;
+}
+
+.biography-controller .popover-help-container .popover{
+	left: -109px;
+}
+
+.biography-controller .popover.bottom .arrow{
+	left: 117px;
 }
 
 
@@ -4383,14 +4404,14 @@ p.orcid-id-container{
 		
 	.workspace-accordion-item{
 		border-bottom: none;
-	}
+	}	
 	
 	#workspace-accordion .popover-help-container .popover{
-		left:-134px !important;
+		left:-134px;
 	}
 	
 	#workspace-accordion .popover-help-container .arrow{
-		left: 145px !important;
+		left: 145px;
 	}		
 
 	.public-profile .popover-help-container .popover{
@@ -4793,6 +4814,48 @@ p.orcid-id-container{
 	.id-banner .id-banner-container ul.id-banner-dropdown > li{
 		width: 100%;
 	}
+	
+	.other-names-edit input,
+	.keywords-edit input,
+	.websites-edit input{
+		width: 90%;
+	}
+	
+	.other-names-edit .glyphicon-plus,
+	.websites-edit .glyphicon-plus{
+		margin-top: 15px;
+	}
+	
+	.other-names-edit .glyphicon-plus,
+    .other-names-edit .glyphicon-trash,
+	.keywords-edit .glyphicon-plus,
+	.keywords-edit .glyphicon-trash,
+	.websites-edit .glyphicon-plus,
+	.websites-edit .glyphicon-trash{			
+		font-size: 20px;		
+	}
+	
+	.public-profile p{
+		margin-bottom: 15px;		
+	}
+	
+	.full-width{
+		width: 100%;
+	}
+	
+	.biography-controller .popover-help-container .popover{
+		left: -110px !important;
+	}
+	
+	.biography-controller .popover.bottom .arrow{
+		left: 122px !important;
+	}
+	
+	.mobile-box{
+		padding: 10px 0;
+		display: block;
+	}
+	
 	
 }
 

@@ -156,6 +156,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
         StringBuilder builder = new StringBuilder(
                 "SELECT p.orcid FROM profile p LEFT JOIN profile_event e ON e.orcid = p.orcid AND e.profile_event_type = :profileEventType");
         builder.append(" WHERE p.claimed = false");
+        builder.append(" AND p.deprecated_date is null AND p.profile_deactivation_date is null AND p.account_expiry is null ");
         // Hasn't already been sent a reminder
         builder.append(" AND e.orcid IS NULL");
         // Has to be have been created at least remindAfterDays number of days
@@ -313,6 +314,15 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
                 "select count(p.id) from ProfileEntity p where p.claimed = FALSE and p.source.id = :clientId and p.id = :messageOrcid", Long.class);
         query.setParameter("clientId", clientId);
         query.setParameter("messageOrcid", messageOrcid);
+        Long result = query.getSingleResult();
+        return (result != null && result > 0);
+    }
+
+    @Override
+    public boolean exists(String orcid) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "select count(p.id) from ProfileEntity p where p.id = :orcid", Long.class);
+        query.setParameter("orcid", orcid);
         Long result = query.getSingleResult();
         return (result != null && result > 0);
     }
@@ -503,15 +513,29 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
     
     @Override
     @Transactional
-    public void updateBiography(String orcid, String biography) {
+    public void updateBiography(String orcid, String biography, Visibility visibility) {
         Query updateQuery = entityManager
-                .createQuery("update ProfileEntity set lastModified = now(), biography = :biography where orcid = :orcid");
+                .createQuery("update ProfileEntity set lastModified = now(), biography = :biography, biography_visibility = :visibility where orcid = :orcid");
         updateQuery.setParameter("orcid", orcid);
         updateQuery.setParameter("biography", biography);
+        updateQuery.setParameter("visibility", visibility == null ? null : StringUtils.upperCase(visibility.value()));
         updateQuery.executeUpdate();
     }
 
+    @Override
+    @Transactional
+    public void updateNames(String orcid, String givenNames, String familyName, String creditName, Visibility creditNameVisibility) {
+        Query updateQuery = entityManager
+                .createQuery("update ProfileEntity set lastModified = now(), family_name = :familyName, given_names = :givenNames, credit_name = :creditName, credit_name_visibility=:creditNameVisibility where orcid = :orcid");
+        updateQuery.setParameter("orcid", orcid);
+        updateQuery.setParameter("givenNames", givenNames);
+        updateQuery.setParameter("familyName", familyName);
+        updateQuery.setParameter("creditName", creditName);
+        updateQuery.setParameter("creditNameVisibility", creditNameVisibility == null ? null : StringUtils.upperCase(creditNameVisibility.value()));
+        updateQuery.executeUpdate();
+    }
 
+    
 
     /**
      * Return the list of profiles that belongs to the provided OrcidType

@@ -75,7 +75,6 @@ import org.orcid.jaxb.model.message.SendChangeNotifications;
 import org.orcid.jaxb.model.message.SendOrcidNews;
 import org.orcid.jaxb.model.message.SubmissionDate;
 import org.orcid.jaxb.model.message.Visibility;
-import org.orcid.jaxb.model.message.WorkVisibilityDefault;
 import org.orcid.password.constants.OrcidPasswordConstants;
 import org.orcid.persistence.dao.EmailDao;
 import org.orcid.persistence.dao.ProfileDao;
@@ -415,7 +414,8 @@ public class RegistrationController extends BaseController {
     @RequestMapping(value = "/registerGivenNamesValidate.json", method = RequestMethod.POST)
     public @ResponseBody
     Registration registerGivenNameValidate(@RequestBody Registration reg) {
-        return super.registerGivenNameValidate(reg);
+        super.givenNameValidate(reg.getGivenNames());
+        return reg;
     }
 
     @RequestMapping(value = "/registerEmailValidate.json", method = RequestMethod.POST)

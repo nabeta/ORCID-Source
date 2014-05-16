@@ -22,18 +22,22 @@
 	<div ng-controller="NameCtrl" class="name-controller">
 		<div ng-show="showEdit == false" ng-click="toggleEdit()">
 			<h2 class="full-name">
-				<span ng-hide="nameForm != null && nameForm.creditName == null" ng-cloak>
-				    {{nameForm.creditName.value}}
+				<span ng-hide="nameForm != null 
+				    && (nameForm.creditName == null || nameForm.creditNameVisibility.visibility != 'PUBLIC')" ng-bind="nameForm.creditName.value" ng-cloak>
 				</span>
-				<span ng-show="nameForm != null && nameForm.creditName == null" ng-cloak>
+				<span ng-show="nameForm != null 
+				    && (nameForm.creditName == null || nameForm.creditNameVisibility.visibility != 'PUBLIC')" ng-cloak>
 				    {{nameForm.givenNames.value}} {{nameForm.familyName.value}}
 				</span>
-				 <span class="glyphicon glyphicon-pencil edit-name edit-option" title="" ng-hide="showEdit == true"></span> 
+				<span class="glyphicon glyphicon-pencil edit-name edit-option" title="" ng-hide="showEdit == true"></span> 
 			</h2>
 		</div>
 		<div class="names-edit" ng-show="showEdit == true" ng-cloak>
 		   <label for="firstName">${springMacroRequestContext.getMessage("manage_bio_settings.labelfirstname")}</label><br />
 		   <input type="text" ng-model="nameForm.givenNames.value"></input><br />
+		   <span class="orcid-error" ng-show="nameForm.givenNames.errors.length > 0">
+			   <div ng-repeat='error in nameForm.givenNames.errors' ng-bind-html="error"></div>
+		   </span>
 		   <label for="lastName">${springMacroRequestContext.getMessage("manage_bio_settings.labellastname")}</label><br />
 		   <input type="text" ng-model="nameForm.familyName.value"></input><br />
 		   <label for="creditName">${springMacroRequestContext.getMessage("manage_bio_settings.labelpublishedname")}</label><br/ >
