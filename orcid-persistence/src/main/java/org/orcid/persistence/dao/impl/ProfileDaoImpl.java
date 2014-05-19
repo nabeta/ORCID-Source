@@ -603,4 +603,20 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
         query.setParameter("orcid", orcid);
         return (String)query.getSingleResult();
     }
+    
+    @Override
+    @Transactional
+    public boolean disableTwitter(String orcid) {
+        Query query = entityManager
+                .createNativeQuery("update profile set twitter=null where orcid=:orcid");
+        query.setParameter("orcid", orcid);
+        return query.executeUpdate() > 0;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<ProfileEntity> getAllProfilesToTweet() {
+        Query query = entityManager.createQuery("from ProfileEntity where profile_deactivation_date=NULL and twitter != null");        
+        return (List<ProfileEntity>) query.getResultList();
+    }
 }

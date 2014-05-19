@@ -175,4 +175,12 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     public String getTwitterKey(String orcid) {
         return profileDao.getTwitterKey(orcid);
     }
+    
+    public boolean disableTwitter(String orcid) {
+        return profileDao.disableTwitter(orcid);
+    }
+    
+    public List<ProfileEntity> getAllProfilesToTweet() {
+        return profileDao.getAllProfilesToTweet();
+    }
 }

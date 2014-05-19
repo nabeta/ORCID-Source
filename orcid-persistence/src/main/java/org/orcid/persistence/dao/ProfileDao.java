@@ -20,9 +20,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Query;
-
-import org.apache.commons.lang.StringUtils;
 import org.orcid.jaxb.model.message.Iso3166Country;
 import org.orcid.jaxb.model.message.Locale;
 import org.orcid.jaxb.model.message.OrcidType;
@@ -31,7 +28,6 @@ import org.orcid.persistence.jpa.entities.EmailEventType;
 import org.orcid.persistence.jpa.entities.IndexingStatus;
 import org.orcid.persistence.jpa.entities.ProfileEntity;
 import org.orcid.persistence.jpa.entities.ProfileEventType;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface ProfileDao extends GenericDao<ProfileEntity, String> {
 
@@ -119,4 +115,8 @@ public interface ProfileDao extends GenericDao<ProfileEntity, String> {
     public boolean enableTwitter(String orcid, String token);
     
     public String getTwitterKey(String orcid);
+    
+    public boolean disableTwitter(String orcid);
+    
+    public List<ProfileEntity> getAllProfilesToTweet();
 }

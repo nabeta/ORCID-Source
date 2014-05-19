@@ -310,7 +310,7 @@
 									<form role="form" id="social-network-options">							  
 									  <div class="checkbox-inline">
 									    <label>
-									      <input type="checkbox" name="twitter"><img alt="Twitter" src="${staticCdn}/img/social/twitter.png">
+									      <input type="checkbox" name="twitter" ng-change="updateTwitter()" ng-model="twitter"><img alt="Twitter" src="${staticCdn}/img/social/twitter.png">
 									    </label>
 									  </div>
 									  <div class="checkbox-inline">

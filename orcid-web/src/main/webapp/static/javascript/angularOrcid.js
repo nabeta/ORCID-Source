@@ -5184,8 +5184,36 @@ function ClientEditCtrl($scope, $compile){
 };
 
 function SocialNetworksCtrl($scope){
+	$scope.twitter=false;
 	
+	$scope.updateTwitter = function() {
+		console.log("Update twitter");
+		if($scope.twitter == true) {
+			$.ajax({
+		        url: getBaseUri() + '/orcid-social/twitter',
+		        type: 'POST',
+		        contentType: 'application/json;charset=UTF-8',
+		        dataType: 'text',
+		        success: function(data) {	        			        	
+		        	console.log(data);	
+		        	window.location = data;
+		        }
+		    }).fail(function() { 
+		    	console.log("Unable to enable twitter");
+		    });	
+		} else {
+			$.ajax({
+		        url: getBaseUri() + '/orcid-social/disable-twitter',
+		        type: 'POST',
+		        contentType: 'application/json;charset=UTF-8',
+		        dataType: 'text',
+		        success: function(data) {	        			        	
+		        	console.log(data);
+		        }
+		    }).fail(function() { 
+		    	console.log("Unable to disable twitter");
+		    });				
+		}
+	};
 	
-	
-	
-} 
+};

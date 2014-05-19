@@ -61,4 +61,8 @@ public interface ProfileEntityManager {
     public boolean enableTwitter(String orcid, String token);
     
     public String getTwitterKey(String orcid);
+    
+    public boolean disableTwitter(String orcid);
+    
+    public List<ProfileEntity> getAllProfilesToTweet();
 }
