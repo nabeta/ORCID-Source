@@ -302,52 +302,56 @@
 					<td><a href="" ng-click="toggleSocialNetworksEdit()"
 						ng-bind="socialNetworksToggleText"></a></td>
 				</tr>
-				<tr ng-controller="SocialNetworksCtrl" ng-show="showEditSocialSettings" ng-cloak>
+				<tr ng-controller="SocialNetworksCtrl" ng-show="showEditSocialSettings" ng-cloak id="social-networks">
 					<td colspan="2">
 						<div class="editTablePadCell35">
-							<form role="form" id="social-networks">							  
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Facebook
-							    </label>
-							  </div>
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Twitter
-							    </label>
-							  </div>
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Google+
-							    </label>
-							  </div>							  
-							</form>
-							
-							<form role="form" id="sections">							  
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Works
-							    </label>
-							  </div>
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Fundings
-							    </label>
-							  </div>
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Employment
-							    </label>
-							  </div>
-							  <div class="checkbox">
-							    <label>
-							      <input type="checkbox"> Education
-							    </label>
-							  </div>								  
-							</form>
-							
-							
-							
+							<p><@orcid.msg 'manage.social_networks_label_1'/>
+								<div class="grey-box">
+									<form role="form" id="social-network-options">							  
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="twitter"><img alt="Twitter" src="${staticCdn}/img/social/twitter.png">
+									    </label>
+									  </div>
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="facebook"><img src="${staticCdn}/img/social/facebook.png" alt="Facebook" />
+									    </label>
+									  </div>
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="google-plus"><img src="${staticCdn}/img/social/google-plus.png" alt="Google+" />
+									    </label>
+									  </div>							  
+									</form>
+								</div>
+							</p>
+							<p><@orcid.msg 'manage.social_networks_label_2'/>
+								<div class="grey-box">
+									<form role="form" id="sections">							  
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="works"><@orcid.msg 'workspace.Works'/>
+									    </label>
+									  </div>
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="fundings"><@orcid.msg 'workspace.Funding'/>
+									    </label>
+									  </div>
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="employment"><@orcid.msg 'org.orcid.jaxb.model.message.AffiliationType.employment'/>
+									    </label>
+									  </div>
+									  <div class="checkbox-inline">
+									    <label>
+									      <input type="checkbox" name="education"><@orcid.msg 'org.orcid.jaxb.model.message.AffiliationType.education'/>
+									    </label>
+									  </div>								  
+									</form>
+								</div>
+							</p>
 						</div>
 					</td>
 				</tr>
