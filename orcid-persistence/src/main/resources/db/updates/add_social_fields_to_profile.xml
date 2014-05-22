@@ -21,7 +21,8 @@
             
     <changeSet id="ADD-TWITTER-KEY-TO-PROFILE" author="Angel Montenegro">		
 	    <addColumn tableName="profile">
-			<column name="twitter" type="VARCHAR(50)" />			
+			<column name="twitter_token" type="VARCHAR(100)" />
+			<column name="twitter_secret" type="VARCHAR(100)" />			
 		</addColumn>
     </changeSet>
     

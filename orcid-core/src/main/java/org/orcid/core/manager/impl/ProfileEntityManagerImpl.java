@@ -26,7 +26,15 @@ import org.orcid.jaxb.model.message.OrcidProfile;
 import org.orcid.jaxb.model.message.OrcidType;
 import org.orcid.persistence.dao.ProfileDao;
 import org.orcid.persistence.jpa.entities.ProfileEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * 2011-2012 ORCID
@@ -40,7 +48,7 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
 
     @Resource
     private ProfileDao profileDao;
-
+    
     @Override
     public ProfileEntity findByOrcid(String orcid) {
         return profileDao.find(orcid);
@@ -168,8 +176,76 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     /**
      * ORCID SOCIAL PROJECT
      * */
-    public boolean enableTwitter(String orcid, String token) {
-        return profileDao.enableTwitter(orcid, token);
+    @Value("${org.orcid.core.baseUri:http://orcid.org}")
+    private String baseUri;
+    private Twitter twitter = null;
+    private RequestToken requestToken = null;
+    private String authUrl = null;
+    
+    private void init() throws TwitterException {
+        twitter = TwitterFactory.getSingleton();
+        twitter.setOAuthConsumer("soCTKWWByfjq91SxuaQRh4Gnk", "sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM");
+        requestToken = twitter.getOAuthRequestToken();  
+        authUrl = requestToken.getAuthorizationURL();
+    } 
+    
+    public String getAuthUrl() {
+        if(twitter == null) {
+            try {
+                init();
+            } catch(Exception e){System.out.println(e);}
+        }
+        
+        return authUrl;
+    }
+    
+    public void processTwitterNotifications() throws TwitterException {
+        if(twitter == null) {
+            try {
+                init();
+            } catch(Exception e){System.out.println(e);}
+        }
+        
+        List<ProfileEntity> profiles = this.getAllProfilesToTweet();
+        
+        for(ProfileEntity profile : profiles) {
+            String token = profile.getTwitterToken();
+            String secret = profile.getTwitterSecret();
+            
+            ConfigurationBuilder cb = new ConfigurationBuilder();
+            
+            cb.setDebugEnabled(true);
+            //
+             
+            cb.setOAuthConsumerKey("soCTKWWByfjq91SxuaQRh4Gnk");
+            cb.setOAuthConsumerSecret("sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM");
+            cb.setOAuthAccessToken(token);
+            cb.setOAuthAccessTokenSecret(secret);
+             
+            TwitterFactory tf = new TwitterFactory(cb.build());
+ 
+                    Twitter twitter = tf.getInstance();
+ 
+                    twitter.updateStatus("I am updated my status from another cool website" );
+
+        }
+    }
+    
+    
+    
+    
+    
+    
+    public boolean enableTwitter(String orcid, String token, String secret) throws TwitterException {
+        AccessToken accessToken = twitter.getOAuthAccessToken(requestToken,secret);
+        
+        
+        
+        String s1 = accessToken.getToken();
+        String s2 = accessToken.getTokenSecret();
+        
+        
+        return profileDao.enableTwitter(orcid, s1, s2);
     }
     
     public String getTwitterKey(String orcid) {

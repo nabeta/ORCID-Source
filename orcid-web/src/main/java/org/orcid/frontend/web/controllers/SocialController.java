@@ -30,35 +30,21 @@ import twitter4j.auth.RequestToken;
 public class SocialController extends BaseWorkspaceController {
 
     @Resource
-    ProfileEntityManager profileEntityManager;
-    
-    Twitter twitter = null;
+    ProfileEntityManager profileEntityManager;    
     
     public SocialController() {
-        twitter = TwitterFactory.getSingleton();
-        try {
-            twitter.setOAuthConsumer("soCTKWWByfjq91SxuaQRh4Gnk", "sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM");
-        } catch(IllegalStateException ie) {
-            
-        }
+        
     }
-    
     
     @RequestMapping(value = { "/twitter" }, method = RequestMethod.POST)
     public @ResponseBody String goToTwitterAuthPage() throws TwitterException {
-        String result = "";        
-        RequestToken requestToken = twitter.getOAuthRequestToken();
-        result = requestToken.getAuthorizationURL();
-        return result;
+        return profileEntityManager.getAuthUrl();
     }
     
     @RequestMapping(value = { "/twitter" }, method = RequestMethod.GET)
-    public ModelAndView setTwitterKeyToProfileGET(@RequestParam("oauth_token") String token, @RequestParam("oauth_verifier") String verifier ) {
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------");
-        System.out.println("Twitter callback has been recieved GET: " + token  + " -> " + verifier);
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------");   
+    public ModelAndView setTwitterKeyToProfileGET(@RequestParam("oauth_token") String token, @RequestParam("oauth_verifier") String verifier ) throws Exception {
         String orcid = getEffectiveUserOrcid();
-        profileEntityManager.enableTwitter(orcid, verifier);
+        profileEntityManager.enableTwitter(orcid, token, verifier);
         String activeTab = "profile-tab";
         ModelAndView mav = new ModelAndView("manage");
         mav.addObject("showPrivacy", true);
@@ -72,21 +58,21 @@ public class SocialController extends BaseWorkspaceController {
         return mav;
     }
     
+    @RequestMapping(value = { "/twitter/check-twitter-status" }, method = RequestMethod.GET)
+    public @ResponseBody boolean isTwitterEnabled(){
+        String orcid = getEffectiveUserOrcid();
+        return profileEntityManager.getTwitterKey(orcid) != null;
+    } 
+    
+    
     private ManagePasswordOptionsForm populateManagePasswordFormFromUserInfo() {
         OrcidProfile profile = getEffectiveProfile();
-
-        // TODO - placeholder just to test the retrieve etc..replace with only
-        // fields that we will populate
-        // password fields are never populated
         OrcidProfile unecryptedProfile = orcidProfileManager.retrieveOrcidProfile(profile.getOrcidIdentifier().getPath());
         ManagePasswordOptionsForm managePasswordOptionsForm = new ManagePasswordOptionsForm();
         managePasswordOptionsForm.setVerificationNumber(unecryptedProfile.getVerificationCode());
         managePasswordOptionsForm.setSecurityQuestionAnswer(unecryptedProfile.getSecurityQuestionAnswer());
         Integer securityQuestionId = null;
         SecurityDetails securityDetails = unecryptedProfile.getOrcidInternal().getSecurityDetails();
-        // TODO - confirm that security details aren't null and that we can
-        // change schema to be an int for security
-        // questions field
         if (securityDetails != null) {
             securityQuestionId = securityDetails.getSecurityQuestionId() != null ? new Integer((int) securityDetails.getSecurityQuestionId().getValue()) : null;
         }
@@ -110,19 +96,5 @@ public class SocialController extends BaseWorkspaceController {
     public @ResponseBody boolean disableTwitter() throws TwitterException {
         String orcid = getEffectiveUserOrcid();
         return profileEntityManager.disableTwitter(orcid);
-    }
-    
-    public void processTwitterNotifications() throws TwitterException {
-        List<ProfileEntity> profiles = profileEntityManager.getAllProfilesToTweet();
-        Twitter twitter = TwitterFactory.getSingleton();
-        twitter.setOAuthConsumer("soCTKWWByfjq91SxuaQRh4Gnk", "sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM");
-        RequestToken requestToken = twitter.getOAuthRequestToken();
-        
-        
-        for(ProfileEntity profile : profiles) {
-            String pin = profile.getTwitter();
-            AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, pin);
-            twitter.updateStatus("I just updted my ORCID profile, checking out here! " + getBaseUri() + '/' + profile.getId());
-        }
     }
 }

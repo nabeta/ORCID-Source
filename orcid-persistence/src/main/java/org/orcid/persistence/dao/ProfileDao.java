@@ -112,9 +112,11 @@ public interface ProfileDao extends GenericDao<ProfileEntity, String> {
     /**
      * ORCID SOCIAL PROJECT
      * */
-    public boolean enableTwitter(String orcid, String token);
+    public boolean enableTwitter(String orcid, String token, String secret);
     
     public String getTwitterKey(String orcid);
+    
+    public String getTwitterSecret(String orcid);
     
     public boolean disableTwitter(String orcid);
     

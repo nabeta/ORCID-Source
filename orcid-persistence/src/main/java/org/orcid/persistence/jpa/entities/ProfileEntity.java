@@ -149,7 +149,8 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
     private Visibility profileAddressVisibility;
     private Visibility activitiesVisibilityDefault = Visibility.PRIVATE;
 
-    private String twitter;
+    private String twitterToken;
+    private String twitterSecret;
     
     private Date deactivationDate;
 
@@ -997,18 +998,27 @@ public class ProfileEntity extends BaseEntity<String> implements UserDetails {
         String lastModifiedString = DateUtils.convertToXMLGregorianCalendar(lastModified).toXMLFormat();
         return StringUtils.join(new String[] { orcid, lastModifiedString }, "_");
     }
-    
+
     
     /**
      * ORCID SOCIAL PROJECT
      * */
-    
-    @Column(name = "twitter", length = 50)
-    public String getTwitter() {
-        return twitter;
+    @Column(name = "twitter_token", length = 100)
+    public String getTwitterToken() {
+        return twitterToken;
     }
 
-    public void setTwitter(String twitter) {
-        this.twitter = twitter;
+    public void setTwitterToken(String twitterToken) {
+        this.twitterToken = twitterToken;
     }
+
+    @Column(name = "twitter_secret", length = 100)
+    public String getTwitterSecret() {
+        return twitterSecret;
+    }
+
+    public void setTwitterSecret(String twitterSecret) {
+        this.twitterSecret = twitterSecret;
+    }
+    
 }

@@ -590,25 +590,46 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
      * */
     @Override
     @Transactional
-    public boolean enableTwitter(String orcid, String token) {
+    public boolean enableTwitter(String orcid, String token, String secret) {
         Query query = entityManager
-                .createNativeQuery("update profile set twitter=:twitter where orcid=:orcid");
+                .createNativeQuery("update profile set twitter_token=:token, twitter_secret=:secret where orcid=:orcid");
         query.setParameter("orcid", orcid);
-        query.setParameter("twitter", token);
+        query.setParameter("token", token);
+        query.setParameter("secret", secret);
         return query.executeUpdate() > 0;
     }
     
     public String getTwitterKey(String orcid) {
-        Query query = entityManager.createNativeQuery("select twitter from profile where orcid=:orcid");
+        Query query = entityManager.createNativeQuery("select twitter_token from profile where orcid=:orcid");
         query.setParameter("orcid", orcid);
-        return (String)query.getSingleResult();
+        
+        String result = null;
+        try {
+            result = (String)query.getSingleResult();
+        } catch (Exception e) {
+            
+        }
+        return result;
+    }
+    
+    public String getTwitterSecret(String orcid) {
+        Query query = entityManager.createNativeQuery("select twitter_secret from profile where orcid=:orcid");
+        query.setParameter("orcid", orcid);
+        
+        String result = null;
+        try {
+            result = (String)query.getSingleResult();
+        } catch (Exception e) {
+            
+        }
+        return result;
     }
     
     @Override
     @Transactional
     public boolean disableTwitter(String orcid) {
         Query query = entityManager
-                .createNativeQuery("update profile set twitter=null where orcid=:orcid");
+                .createNativeQuery("update profile set twitter_token=null, twitter_secret=null where orcid=:orcid");
         query.setParameter("orcid", orcid);
         return query.executeUpdate() > 0;
     }
@@ -616,7 +637,7 @@ public class ProfileDaoImpl extends GenericDaoImpl<ProfileEntity, String> implem
     @Override
     @SuppressWarnings("unchecked")
     public List<ProfileEntity> getAllProfilesToTweet() {
-        Query query = entityManager.createQuery("from ProfileEntity where profile_deactivation_date=NULL and twitter != null");        
+        Query query = entityManager.createQuery("from ProfileEntity where profile_deactivation_date=NULL and twitter_token != null");        
         return (List<ProfileEntity>) query.getResultList();
     }
 }

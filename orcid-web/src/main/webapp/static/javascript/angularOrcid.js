@@ -650,7 +650,6 @@ function EditTableCtrl($scope) {
 	$scope.socialNetworksUpdateToggleText = function () {
 		if ($scope.showEditSocialSettings) $scope.socialNetworksToggleText = om.get("manage.socialNetworks.hide");
 		else $scope.socialNetworksToggleText = om.get("manage.socialNetworks.edit");
-		console.log($scope.showEditSocialSettings);
 	};
 	
 	$scope.toggleSocialNetworksEdit = function(){
@@ -5186,6 +5185,26 @@ function ClientEditCtrl($scope, $compile){
 function SocialNetworksCtrl($scope){
 	$scope.twitter=false;
 	
+	$scope.checkTwitterStatus = function(){
+		$.ajax({
+			url: getBaseUri() + '/orcid-social/twitter/check-twitter-status',
+	        type: 'GET',
+	        contentType: 'application/json;charset=UTF-8',
+	        dataType: 'text',
+	        success: function(data) {	
+	        	console.log("-> " + data);
+	        	if(data == "true")
+	        		$scope.twitter = true;
+	        	else 
+	        		$scope.twitter = false;
+	        	console.log("value: " + $scope.twitter);
+	        	$scope.$apply();
+	        }
+		}).fail(function(){
+			console.log("Unable to fetch user twitter status");
+		});
+	};
+	
 	$scope.updateTwitter = function() {
 		console.log("Update twitter");
 		if($scope.twitter == true) {
@@ -5194,8 +5213,7 @@ function SocialNetworksCtrl($scope){
 		        type: 'POST',
 		        contentType: 'application/json;charset=UTF-8',
 		        dataType: 'text',
-		        success: function(data) {	        			        	
-		        	console.log(data);	
+		        success: function(data) {	        			        			        	
 		        	window.location = data;
 		        }
 		    }).fail(function() { 
@@ -5207,13 +5225,22 @@ function SocialNetworksCtrl($scope){
 		        type: 'POST',
 		        contentType: 'application/json;charset=UTF-8',
 		        dataType: 'text',
-		        success: function(data) {	        			        	
-		        	console.log(data);
+		        success: function(data) {
+		        	if(data == "true"){
+		        		$scope.twitter = false;
+		        	} else {
+		        		$scope.twitter = true;
+		        	}
+		        	
+		        	$scope.$apply();
 		        }
 		    }).fail(function() { 
 		    	console.log("Unable to disable twitter");
 		    });				
 		}
 	};
+	
+	//init
+	$scope.checkTwitterStatus();
 	
 };

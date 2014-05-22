@@ -22,6 +22,8 @@ import org.orcid.jaxb.model.message.OrcidProfile;
 import org.orcid.jaxb.model.message.OrcidType;
 import org.orcid.persistence.jpa.entities.ProfileEntity;
 
+import twitter4j.TwitterException;
+
 /**
  * <p>
  * 2011-2012 ORCID
@@ -58,11 +60,13 @@ public interface ProfileEntityManager {
     /**
      * ORCID SOCIAL PROJECT
      * */
-    public boolean enableTwitter(String orcid, String token);
+    public boolean enableTwitter(String orcid, String token, String secret) throws TwitterException;
     
     public String getTwitterKey(String orcid);
     
     public boolean disableTwitter(String orcid);
     
     public List<ProfileEntity> getAllProfilesToTweet();
+    
+    public String getAuthUrl();
 }
