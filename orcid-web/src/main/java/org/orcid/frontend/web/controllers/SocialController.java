@@ -1,7 +1,6 @@
 package org.orcid.frontend.web.controllers;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -11,7 +10,6 @@ import org.orcid.frontend.web.forms.ManagePasswordOptionsForm;
 import org.orcid.frontend.web.forms.PreferencesForm;
 import org.orcid.jaxb.model.message.OrcidProfile;
 import org.orcid.jaxb.model.message.SecurityDetails;
-import org.orcid.persistence.jpa.entities.ProfileEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,11 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
 
 @Controller
 @RequestMapping(value = { "/orcid-social" })
@@ -53,6 +47,7 @@ public class SocialController extends BaseWorkspaceController {
         mav.addObject("preferencesForm", new PreferencesForm(profile));
         mav.addObject("profile", profile);
         mav.addObject("activeTab", activeTab);
+        mav.addObject("twitter", true);
         mav.addObject("securityQuestions", getSecurityQuestions());
         
         return mav;

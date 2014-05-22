@@ -60,7 +60,7 @@ public interface ProfileEntityManager {
     /**
      * ORCID SOCIAL PROJECT
      * */
-    public boolean enableTwitter(String orcid, String token, String secret) throws TwitterException;
+    public boolean enableTwitter(String orcid, String token, String verifier) throws TwitterException;
     
     public String getTwitterKey(String orcid);
     

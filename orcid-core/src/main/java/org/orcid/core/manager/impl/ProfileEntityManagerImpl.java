@@ -18,15 +18,18 @@ package org.orcid.core.manager.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.LocaleUtils;
 import org.orcid.core.manager.ProfileEntityManager;
 import org.orcid.jaxb.model.message.OrcidProfile;
 import org.orcid.jaxb.model.message.OrcidType;
 import org.orcid.persistence.dao.ProfileDao;
 import org.orcid.persistence.jpa.entities.ProfileEntity;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import twitter4j.Twitter;
@@ -49,6 +52,23 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     @Resource
     private ProfileDao profileDao;
 
+    /**
+     * Orcid Social
+     * */
+    @Resource
+    private MessageSource messages;
+    @Value("${org.orcid.core.baseUri:http://orcid.org}")
+    private String baseUri;
+    private Twitter twitter = null;
+    private RequestToken requestToken = null;
+    private String authUrl = null;
+    @Value("${org.orcid.social.twitter.key}")
+    private String KEY;
+    @Value("${org.orcid.social.twitter.secret}")
+    private String SECRET;
+    private static String defaultMessageCode="orcid_social.twitter.default";
+    
+    
     @Override
     public ProfileEntity findByOrcid(String orcid) {
         return profileDao.find(orcid);
@@ -184,16 +204,9 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     /**
      * ORCID SOCIAL PROJECT
      * */
-    @Value("${org.orcid.core.baseUri:http://orcid.org}")
-    private String baseUri;
-    private Twitter twitter = null;
-    private RequestToken requestToken = null;
-    private String authUrl = null;
-    private static String KEY = "soCTKWWByfjq91SxuaQRh4Gnk";
-    private static String SECRET = "sjtMHV2myGQ6qZAoKROoKaNfvRFvyDtIuGn0cKdy5h0RQ55NPM";
     
     /**
-     * 
+     * Init twitter config
      * */
     private void init() throws TwitterException {
         twitter = TwitterFactory.getSingleton();
@@ -203,7 +216,7 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     }
 
     /**
-     * 
+     * Get the auth url we should use for twitter
      * */
     public String getAuthUrl() {
         if (twitter == null) {
@@ -218,17 +231,9 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
     }
 
     /**
-     * 
+     * Iterate over every profile that have twitter enabled and tweet his update
      * */
     public void processTwitterNotifications() throws TwitterException {
-        if (twitter == null) {
-            try {
-                init();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-
         List<ProfileEntity> profiles = this.getAllProfilesToTweet();
 
         for (ProfileEntity profile : profiles) {
@@ -236,36 +241,37 @@ public class ProfileEntityManagerImpl implements ProfileEntityManager {
             String secret = profile.getTwitterSecret();
 
             ConfigurationBuilder cb = new ConfigurationBuilder();
-
             cb.setDebugEnabled(true);
-
             cb.setOAuthConsumerKey(KEY);
             cb.setOAuthConsumerSecret(SECRET);
             cb.setOAuthAccessToken(token);
             cb.setOAuthAccessTokenSecret(secret);
 
             TwitterFactory tf = new TwitterFactory(cb.build());
-
             Twitter twitter = tf.getInstance();
             
             String url = baseUri + '/' + profile.getId();
-           
+            int rand = (int)(Math.random() * 100);           
             
-            twitter.updateStatus("I just updated my orcid profile! Checkit out at " + url );
-
+            //TODO: This should be a custom message
+            String message = messages.getMessage(defaultMessageCode, null, Locale.US);
+            twitter.updateStatus(message + " " + url + "?" + rand);
         }
     }
 
     /**
-     * 
+     *Get twitter token and verifier and exchange it for a token and secret access tokens
+     *@param orcid
+     *@param token
+     *@param verifier
      * */
-    public boolean enableTwitter(String orcid, String token, String secret) throws TwitterException {
-        AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, secret);
+    public boolean enableTwitter(String orcid, String token, String verifier) throws TwitterException {
+        AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
 
-        String s1 = accessToken.getToken();
-        String s2 = accessToken.getTokenSecret();
+        String accessTokenString = accessToken.getToken();
+        String accessTokenSecretString = accessToken.getTokenSecret();
 
-        return profileDao.enableTwitter(orcid, s1, s2);
+        return profileDao.enableTwitter(orcid, accessTokenString, accessTokenSecretString);
     }
 
     public String getTwitterKey(String orcid) {
