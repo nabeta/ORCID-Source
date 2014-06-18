@@ -5193,8 +5193,4 @@ ul.sso-options li span{
 	.container{
 		max-width:960px;
 	}
-}
-
-@media only screen and (-webkit-min-device-pixel-ratio: 2) , only screen and (min-device-pixel-ratio: 2) {
-	
-}
+}s
