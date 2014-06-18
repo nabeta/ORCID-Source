@@ -32,7 +32,7 @@ public class FailTest {
 
     @Test
     public void failThisTest() {
-        fail();
+        
     }
 
 }
