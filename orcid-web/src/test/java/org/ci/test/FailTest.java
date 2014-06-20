@@ -32,6 +32,7 @@ public class FailTest {
 
     @Test
     public void failThisTest() {
+        // Fail this!
         fail();
     }
 
