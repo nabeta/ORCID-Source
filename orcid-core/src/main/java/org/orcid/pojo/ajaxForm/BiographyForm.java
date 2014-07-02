@@ -41,9 +41,9 @@ public class BiographyForm implements ErrorsInterface, Serializable {
             if (op.getOrcidBio().getBiography() != null)
                 if (op.getOrcidBio().getBiography().getContent() != null) {
                     bf.setBiography(Text.valueOf(op.getOrcidBio().getBiography().getContent()));
-            }
+                }
         if (op.getOrcidBio() == null || op.getOrcidBio().getBiography() == null || op.getOrcidBio().getBiography().getVisibility() == null) {
-            bf.setVisiblity(Visibility.valueOf(OrcidVisibilityDefaults.BIOGRAPHY_DEFAULT.getVisibility()));            
+            bf.setVisiblity(Visibility.valueOf(OrcidVisibilityDefaults.BIOGRAPHY_DEFAULT.getVisibility()));
         } else {
             bf.setVisiblity(Visibility.valueOf(op.getOrcidBio().getBiography().getVisibility()));
         }
@@ -55,13 +55,12 @@ public class BiographyForm implements ErrorsInterface, Serializable {
             op.setOrcidBio(new OrcidBio());
         if (op.getOrcidBio().getBiography() == null)
             op.getOrcidBio().setBiography(new Biography());
-        else {
-            op.getOrcidBio().getBiography().setContent(this.biography.toString());            
-            if(this.visiblity == null)
-                op.getOrcidBio().getBiography().setVisibility(OrcidVisibilityDefaults.BIOGRAPHY_DEFAULT.getVisibility());
-            else
-                op.getOrcidBio().getBiography().setVisibility(this.visiblity.getVisibility());
-        }
+
+        op.getOrcidBio().getBiography().setContent(this.biography.toString());
+        if (this.visiblity == null)
+            op.getOrcidBio().getBiography().setVisibility(OrcidVisibilityDefaults.BIOGRAPHY_DEFAULT.getVisibility());
+        else
+            op.getOrcidBio().getBiography().setVisibility(this.visiblity.getVisibility());
     }
 
     public List<String> getErrors() {
